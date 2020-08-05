@@ -8,7 +8,8 @@ module Scheme
     end
 
     @@builtins = {car: BuiltinCar.new, cdr: BuiltinCdr.new,
-                  cons: BuiltinCons.new, "+": BuiltinPlus.new}
+                  cons: BuiltinCons.new, "+": BuiltinPlus.new,
+                  "-": BuiltinMinus.new}
 
     def self.builtins
       @@builtins
@@ -55,6 +56,24 @@ module Scheme
         a += arg
       end
       a
+    end
+  end
+
+  class BuiltinMinus < Builtin
+    @@name = "-"
+
+    def call(args)
+      if args.size == 0
+        raise "wrong number of arguments to -"
+      elsif args.size == 1
+        -args[0]
+      else
+        a = args[0]
+        args[1..].each do |arg|
+          a -= arg
+        end
+        a
+      end
     end
   end
 end

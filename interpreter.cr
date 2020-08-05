@@ -119,6 +119,12 @@ module Scheme
           eval_quote rest
         when Symbol.intern "lambda"
           eval_lambda rest
+        when Symbol.intern "and"
+          eval_and rest
+        when Symbol.intern "or"
+          eval_or rest
+        when Symbol.intern "begin"
+          eval_begin rest
         else
           eval_call(eval(obj.car), rest)
         end
@@ -163,12 +169,42 @@ module Scheme
       Undefined.the
     end
 
-    def eval_lambda(args, name=nil)
+    def eval_lambda(args)
       if (ll = args[0]).is_a? List
         Closure.new(ll, args[1..], self)
       else
         raise "non-list lambda-list"
       end
+    end
+
+    def eval_and(args)
+      result = true.to_scheme
+      args.each do |arg|
+        result = eval(arg)
+        if result == false.to_scheme
+          break
+        end
+      end
+      result
+    end
+
+    def eval_or(args)
+      result = false.to_scheme
+      args.each do |arg|
+        result = eval(arg)
+        if result != false.to_scheme
+          break
+        end
+      end
+      result
+    end
+
+    def eval_begin(args)
+      result = Undefined.the
+      args.each do |arg|
+        result = eval(arg)
+      end
+      result
     end
   end
 end

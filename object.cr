@@ -13,6 +13,13 @@ module Scheme
       raise "object #{self} cannot be added"
     end
 
+    def -
+      raise "object #{self} cannot be negated"
+    end
+
+    def -(other)
+      raise "object #{self} cannot be subtracted"
+    end
   end
 
   abstract class SchemeNumber < SchemeObject
@@ -20,7 +27,19 @@ module Scheme
       if other.is_a? SchemeNumber
         (to_crystal + other.to_crystal).to_scheme
       else
-        raise "object #{self} cannot be added"
+        raise "object #{other} cannot be added"
+      end
+    end
+
+    def -
+        (- (to_crystal)).to_scheme
+    end
+
+    def -(other)
+      if other.is_a? SchemeNumber
+        (to_crystal - other.to_crystal).to_scheme
+      else
+        raise "object #{other} cannot be subtracted"
       end
     end
   end
