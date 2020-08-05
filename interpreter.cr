@@ -3,6 +3,41 @@ require "./builtin.cr"
 
 module Scheme
 
+  class Closure < SchemeObject
+    def initialize(@lambdalist : List, @body : Array(SchemeObject),
+                   @state : State, @name : String? = nil)
+    end
+
+    def to_s
+      if (name = @name).nil?
+        "#<closure>"
+      else
+        "#<closure #{name}>"
+      end
+    end
+
+    def call(args)
+      newstate = @state.nest
+
+      if (ll = @lambdalist).is_a? Cons
+        ll.zip(args).each do |name, val|
+          if name.is_a? Symbol
+            newstate[name] = val
+          end
+        end
+      elsif ll.is_a? Nil
+      else
+        raise "non-list lambda-list"
+      end
+
+      ret = Undefined.the
+      @body.each do |expr|
+        ret = newstate.eval(expr)
+      end
+      ret
+    end
+  end
+
   class State
     def initialize(@parent : State? = nil)
       @scope = Hash(Symbol, SchemeObject).new
@@ -51,6 +86,10 @@ module Scheme
       end
     end
 
+    def nest
+      self.class.new(self)
+    end
+
     def eval_call(fn, args)
       fn.call(
         args.map do |obj|
@@ -78,6 +117,8 @@ module Scheme
           eval_if rest
         when Symbol.intern "quote"
           eval_quote rest
+        when Symbol.intern "lambda"
+          eval_lambda rest
         else
           eval_call(eval(obj.car), rest)
         end
@@ -100,7 +141,11 @@ module Scheme
 
     def eval_define(args)
       if (ll = args[0]).is_a? Cons
-        raise "lambda-defines are unimplemented"
+        if (name = ll.car).is_a? Symbol
+          self[name] = Closure.new(ll.cdr, args[1..], self, name.to_s)
+        else
+          raise "invalid argument to define"
+        end
       elsif (name = args[0]).is_a? Symbol
         self[name] = eval(args[1])
       else
@@ -116,6 +161,14 @@ module Scheme
         raise "invalid argument to set!"
       end
       Undefined.the
+    end
+
+    def eval_lambda(args, name=nil)
+      if (ll = args[0]).is_a? List
+        Closure.new(ll, args[1..], self)
+      else
+        raise "non-list lambda-list"
+      end
     end
   end
 end

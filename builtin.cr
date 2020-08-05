@@ -8,7 +8,7 @@ module Scheme
     end
 
     @@builtins = {car: BuiltinCar.new, cdr: BuiltinCdr.new,
-                  cons: BuiltinCons.new}
+                  cons: BuiltinCons.new, "+": BuiltinPlus.new}
 
     def self.builtins
       @@builtins
@@ -43,6 +43,18 @@ module Scheme
     @@name = "cons"
     def call(args)
       Cons.new(args[0], args[1])
+    end
+  end
+
+  class BuiltinPlus < Builtin
+    @@name = "+"
+
+    def call(args)
+      a = 0.to_scheme
+      args.each do |arg|
+        a += arg
+      end
+      a
     end
   end
 end

@@ -8,23 +8,46 @@ module Scheme
     def call(args)
       raise "object #{self} is not callable."
     end
+
+    def +(other)
+      raise "object #{self} cannot be added"
+    end
+
   end
 
-  class Fixnum < SchemeObject
+  abstract class SchemeNumber < SchemeObject
+    def +(other)
+      if other.is_a? SchemeNumber
+        (to_crystal + other.to_crystal).to_scheme
+      else
+        raise "object #{self} cannot be added"
+      end
+    end
+  end
+
+  class Fixnum < SchemeNumber
     def initialize(@value : Int64)
     end
 
     def to_s
       "#{@value}"
     end
+
+    def to_crystal
+      @value
+    end
   end
 
-  class Flonum < SchemeObject
+  class Flonum < SchemeNumber
     def initialize(@value : Float64)
     end
 
     def to_s
       "#{@value}"
+    end
+
+    def to_crystal
+      @value
     end
   end
 
@@ -68,6 +91,10 @@ module Scheme
       else
         self.false
       end
+    end
+
+    def to_crystal
+      @value
     end
 
     def to_s
@@ -120,15 +147,25 @@ module Scheme
   class Nil < SingletonSchemeObject
     @@classname = "nil"
     @@instance = Nil.new
+    include Enumerable(SchemeObject)
 
     def self.the
       @@instance
     end
 
+    def to_crystal
+      nil
+    end
+
     def to_s
       "()"
     end
+
+    def each(&block : SchemeObject -> _)
+    end
   end
+
+  alias List = Nil | Cons
 
   class Eof < SingletonSchemeObject
     @@classname = "EOF"
