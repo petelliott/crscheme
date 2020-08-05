@@ -45,9 +45,7 @@ module Scheme
       #insert builtins at highest level
       if @parent.nil?
         Builtin.builtins.each do |k, v|
-          if (sk = k.to_scheme).is_a? Symbol
-            @scope[sk] = v
-          end
+          @scope[k] = v
         end
       end
     end

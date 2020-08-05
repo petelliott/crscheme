@@ -72,7 +72,7 @@ module Scheme
 
 
   class Symbol < SchemeObject
-    @@intern_tab = Hash(String, SchemeObject).new
+    @@intern_tab = Hash(String, Symbol).new
 
     private def initialize(@value : String)
     end
