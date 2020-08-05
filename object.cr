@@ -36,7 +36,7 @@ module Scheme
     end
 
     def self.intern(str)
-      if @@intern_tab[str].nil?
+      if @@intern_tab[str]?.nil?
         @@intern_tab[str] = new(str)
       end
       @@intern_tab[str]
@@ -111,6 +111,10 @@ module Scheme
 
     def self.the
       @@instance
+    end
+
+    def to_s
+      "()"
     end
   end
 
