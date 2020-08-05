@@ -5,7 +5,7 @@ module Scheme
       "#<object:#{object_id}>"
     end
 
-    def call(*args)
+    def call(args)
       raise "object #{self} is not callable."
     end
   end
@@ -80,6 +80,10 @@ module Scheme
   end
 
   class Cons < SchemeObject
+    include Enumerable(SchemeObject)
+    getter car
+    getter cdr
+
     def initialize(@car : SchemeObject, @cdr : SchemeObject)
     end
 
@@ -94,6 +98,14 @@ module Scheme
         "#{@car.to_s} #{cdr.inner_to_s}"
       else
         "#{@car.to_s} . #{@cdr.to_s}"
+      end
+    end
+
+    def each
+      cur = self
+      while cur.is_a? Cons
+        yield cur.car
+        cur = cur.cdr
       end
     end
   end

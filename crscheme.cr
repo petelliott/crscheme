@@ -1,16 +1,18 @@
 require "./object"
 require "./read"
+require "./interpreter"
 
+interp = Scheme::State.new
 
 loop do
   print "> "
-  input = STDIN.read_sexp
-  case input
+  result = interp.eval(STDIN.read_sexp)
+  case result
   when Scheme::Eof.the
     break
   when Scheme::Undefined.the
   else
-    puts input.to_s
+    puts result.to_s
   end
 end
 
