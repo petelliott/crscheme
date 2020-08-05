@@ -72,4 +72,14 @@ module Scheme
       a
     end
   end
+
+  builtin "write", Write, def call(args)
+    print args[0].to_s
+    Undefined.the
+  end
+
+  builtin "newline", Newline, def call(args)
+    puts ""
+    Undefined.the
+  end
 end
