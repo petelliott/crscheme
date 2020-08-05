@@ -68,7 +68,7 @@ module Scheme
       if val
         val
       else
-        raise "unbound variable #{idx}"
+        raise "unbound variable #{idx.to_s}"
       end
     end
 
