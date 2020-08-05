@@ -2,7 +2,7 @@ require "./object"
 
 module Scheme
   abstract class Builtin < SchemeObject
-    @@name : String = ""
+    @@name : ::String = ""
     def to_s
       "#<builtin #{@@name}>"
     end
@@ -75,6 +75,15 @@ module Scheme
 
   builtin "write", Write, def call(args)
     print args[0].to_s
+    Undefined.the
+  end
+
+  builtin "display", Display, def call(args)
+    if (s = args[0]).is_a? String
+      print s.to_crystal
+    else
+      print s.to_s
+    end
     Undefined.the
   end
 

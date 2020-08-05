@@ -72,9 +72,9 @@ module Scheme
 
 
   class Symbol < SchemeObject
-    @@intern_tab = Hash(String, Symbol).new
+    @@intern_tab = Hash(::String, Symbol).new
 
-    private def initialize(@value : String)
+    private def initialize(@value : ::String)
     end
 
     def self.intern(str)
@@ -85,6 +85,19 @@ module Scheme
     end
 
     def to_s
+      @value
+    end
+  end
+
+  class String < SchemeObject
+    def initialize(@value : ::String)
+    end
+
+    def to_s
+      @value.dump
+    end
+
+    def to_crystal
       @value
     end
   end
@@ -157,7 +170,7 @@ module Scheme
   end
 
   abstract class SingletonSchemeObject < SchemeObject
-    @@classname : String = "object"
+    @@classname : ::String = "object"
     def to_s
       "#<#{@@classname.downcase}>"
     end
@@ -221,6 +234,12 @@ end
 struct Symbol
   def to_scheme
     Scheme::Symbol.intern(to_s)
+  end
+end
+
+class String
+  def to_scheme
+    Scheme::String.new(self)
   end
 end
 

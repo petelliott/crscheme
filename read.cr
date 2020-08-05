@@ -6,7 +6,7 @@ class IO
       case cpeek
       when nil then Scheme::Eof.the
       when '('  then sexp_read_cons
-      #when "\"" then sexp_read_string
+      when '"' then sexp_read_string
       when '#' then sexp_read_hash
       else
         tok = sexp_read_tok
@@ -109,19 +109,25 @@ class IO
       str
     end
 
-   # private def sexp_read_string
-   #   str = getc
-   #   each_char_u do |ch|
-   #     str << ch;
-   #     case ch
-   #     when '\\'
-   #       str << getc
-   #     when '"'
-   #       break
-   #     end
-   #   end
-   #   str.undump
-   # end
+    private def sexp_read_string
+      assert_next_char '"'
+      str = ""
+      each_char_u do |ch|
+        case ch
+        when '\\'
+          if (c = getc).nil?
+            raise "EOF during escape sequence"
+          else
+            str += c
+          end
+        when '"'
+          break
+        else
+          str += ch;
+        end
+      end
+      str.to_scheme
+    end
 
     private def sexp_read_hash
       assert_next_char '#'

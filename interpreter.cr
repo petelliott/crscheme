@@ -5,7 +5,7 @@ module Scheme
 
   class Closure < SchemeObject
     def initialize(@lambdalist : List, @body : Array(SchemeObject),
-                   @state : State, @name : String? = nil)
+                   @state : State, @name : ::String? = nil)
     end
 
     def to_s
