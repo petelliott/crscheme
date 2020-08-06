@@ -7,9 +7,6 @@ module Scheme
       "#<builtin #{@@name}>"
     end
 
-    #@@builtins = {car: BuiltinCar.new, cdr: BuiltinCdr.new,
-    #              cons: BuiltinCons.new, "+": BuiltinPlus.new,
-    #              "-": BuiltinMinus.new}
     @@builtins = Hash(Symbol,Builtin).new
 
     def self.builtins
@@ -90,5 +87,34 @@ module Scheme
   builtin "newline", Newline, def call(args)
     puts ""
     Undefined.the
+  end
+
+  builtin "vector", Vector, def call(args)
+    args.to_scheme
+  end
+
+  builtin "list", List, def call(args)
+    args.to_scheme.to_list
+  end
+
+  builtin "list->vector", ListToVector, def call(args)
+    obj = args[0]
+    # blame crystal
+    if obj.is_a? Cons
+      obj.to_a.to_scheme
+    elsif obj.is_a? Nil
+      obj.to_a.to_scheme
+    else
+      raise "#{obj.to_s} is not a list"
+    end
+  end
+
+  builtin "vector->list", VectorToList, def call(args)
+    obj = args[0]
+    if obj.is_a? Vector
+      obj.to_list
+    else
+      raise "#{obj.to_s} is not a vector"
+    end
   end
 end

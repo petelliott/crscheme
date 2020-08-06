@@ -137,6 +137,12 @@ class IO
         true.to_scheme
       when "f"
         false.to_scheme
+      when "v"
+        if (obj = read_sexp).responds_to?(:to_a)
+          obj.to_a.to_scheme
+        else
+          raise "unrecognized hash sequence"
+        end
       else
         raise "unrecognised hash sequence"
       end

@@ -169,6 +169,30 @@ module Scheme
     end
   end
 
+  class Vector < SchemeObject
+    def initialize(@value : Array(SchemeObject))
+    end
+
+    def to_s
+      str = @value.join(" ") do |obj|
+        obj.to_s
+      end
+      "#v(#{str})"
+    end
+
+    def to_crystal
+      @value
+    end
+
+    def to_list(idx=0)
+      if idx == @value.size
+        Nil.the
+      else
+        Cons.new(@value[idx], to_list(idx + 1))
+      end
+    end
+  end
+
   abstract class SingletonSchemeObject < SchemeObject
     @@classname : ::String = "object"
     def to_s
@@ -246,6 +270,12 @@ end
 struct Bool
   def to_scheme
     Scheme::Boolean.intern(self)
+  end
+end
+
+class Array
+  def to_scheme
+    Scheme::Vector.new(self)
   end
 end
 
